@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TTRPG Documents</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <style>
+    body { padding-top:50px; }
+    .document {
+        display: inline-block;
+    }
+    .hidden {
+        display: none;
+    }
+  </style>
+</head>
+<body class="container">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">Stephen's PDF Archive</a>
+        </nav>
+    </header>
+    <input type="text" id="searchBox" placeholder="Search...">
+    <span id="clearButton" class="clear-button">&#10006;</span>
+    <main>
+        <% for (let key in image_url) { %>
+        <div class="document" doc_name="<%= image_url[key].info %>">
+            <a href="/pdfjs/?file=<%= image_url[key].pdf %>">
+                <img width="150" src="/coverpages/<%= key %>.jpg" />
+            </a>
+        </div>
+        <% } %>
+    </main>
+    <footer>
+        <p class="text-center text-muted">&copy; Copyright 2023 Stephen M. Youndt</p>
+    </footer>
+    <script type="text/javascript">
+function createSearchRegex(terms, type) {
+const escapeRegex = s => s.replace(/[^a-zA-Z0-9]/g, '\\$&');
+const joinedTerms = terms.map(escapeRegex).filter(term => term.trim() !== '');
+
+if (joinedTerms.length === 0) {
+// Return a regex that matches nothing
+return new RegExp('$.^', 'i');
+}
+
+let pattern;
+if (type === 'AND') {
+// For 'AND', chain lookaheads for each term
+pattern = joinedTerms.map(term => '(?=.*' + term + ')').join('') + '.*';
+} else {
+// For 'OR', join terms with '|'
+pattern = joinedTerms.join('|');
+}
+
+return new RegExp(pattern, 'i');
+}
+
+function setupDynamicSearch(inputId, attributeName, searchType) {
+const input = document.getElementById(inputId);
+const divs = document.getElementsByClassName('document');
+const clearButton = document.getElementById("clearButton");
+
+input.addEventListener('input', function() {
+const terms = this.value.trim().split(/\s+/);
+const regex = createSearchRegex(terms, searchType);
+
+if (this.value.trim() === '') {
+    // If the search box is empty, show all divs
+    clearButton.style.display = "none";
+    for (const div of divs) {
+        div.classList.remove('hidden');
+    }
+} else {
+    // Perform the search and hide/unhide divs based on match
+    clearButton.style.display = "inline-block";
+    for (const div of divs) {
+        const content = div.getAttribute(attributeName);
+        if (regex.test(content)) {
+            div.classList.remove('hidden');
+        } else {
+            div.classList.add('hidden');
+        }
+    }
+}
+});
+
+
+// Add an event listener to the clear button to clear the input field
+clearButton.addEventListener("click", function () {
+input.value = "";
+clearButton.style.display = "none";
+// Trigger the 'input' event after clearing the input field
+const event = new Event("input");
+input.dispatchEvent(event);
+});
+}
+
+// Example usage:
+// setupDynamicSearch('searchBox', 'doc_name', 'AND');
+
+setupDynamicSearch('searchBox', 'doc_name', 'AND');
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  docs-server:
+    image: docs-server:latest
+    container_name: docs-server
+    build:
+      context: .
+      dockerfile: Dockerfile.docs
+    volumes:
+      - ./pdf:/usr/src/app/pdf
+      - ./coverpages:/usr/src/app/coverpages
+    restart: unless-stopped

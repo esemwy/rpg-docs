@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PDF.js mobile responsive</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <!-- Bootstrap  -->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                function getQueryVariable(variable) {
+                    var query = window.location.search.substring(1);
+                    var vars = query.split("&");
+                    for (var i=0;i<vars.length;i++) {
+                        var pair = vars[i].split("=");
+                        if (pair[0] == variable) {
+                            return pair[1];
+                        }
+                    } 
+                    console.log('Query Variable ' + variable + ' not found');
+                }
+
+                var filename      = getQueryVariable("file");
+                var viewerDesktop = `generic/web/viewer_readonly.html?file=/pdf/${filename}.pdf`;
+                var viewerMobile  = `mobile-viewer/viewer_readonly.html?file=/pdf/${filename}.pdf`;
+                var screenWidth   = $(window).width();
+                var screenHeight  = $(window).height();
+                var topSize       = 50; // pixels
+                var iframeHeight  = screenHeight - topSize; // window height reduced by top size (navbar)
+				document.title = decodeURIComponent(filename).replace(/\+/g,' ');
+
+                $('iframe').attr('height', iframeHeight +'px'); 
+
+                if ( screenWidth > 767) {
+                    $('iframe').attr('src', viewerDesktop);
+                } else {
+                    $('iframe').attr('src', viewerMobile);
+                }
+
+                $('#btnDesktop').click(function(){
+                    $('iframe').remove();
+                    $('#content').append('<iframe class="desktop" height="'+ iframeHeight +'px" />');
+                    $('iframe').attr('src', viewerDesktop);
+                });
+
+                $('#btnMobile').click(function(){
+                    $('iframe').remove();
+                    $('#content').append('<iframe class="mobile" height="'+ iframeHeight +'px" />');
+                    $('iframe').attr('src', viewerMobile);
+                });
+
+            });
+        </script>
+        <style>
+            iframe.desktop {
+                position: fixed; 
+                top: 50px; 
+                left: 0; 
+                bottom: 0; 
+                right: 0; 
+                width: 100%; 
+                /* height: 93%; */
+                border: none; 
+                margin: 0; 
+                padding: 0; 
+                overflow: hidden; 
+                z-index: 999;
+            }
+            
+            iframe.mobile {
+                position: fixed; 
+                top: 50px; 
+                left: 0; 
+                bottom: 0; 
+                right: 0; 
+                width: 100%;
+                max-width: 420px; 
+                /* height: 93%; */
+                border: none; 
+                margin: 0; 
+                padding: 0; 
+                overflow: hidden; 
+                z-index: 999;
+            }
+        </style>
+    </head>
+    <body>
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Home</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a id="btnDesktop">Desktop</a></li>
+              <li><a id="btnMobile">Mobile</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+
+      <div id="content">
+        <iframe class="desktop" />
+      </div>
+    </body>
+</html>
