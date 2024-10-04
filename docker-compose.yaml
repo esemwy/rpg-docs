@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   docs-server:
     image: docs-server:latest
@@ -8,6 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.docs
     volumes:
-      - ./pdf:/usr/src/app/pdf
-      - ./coverpages:/usr/src/app/coverpages
+      - ./pdf:/usr/src/app/pdf:ro
+      - ./coverpages:/usr/src/app/coverpages:ro
+      - ./metadata.json:/usr/src/app/metadata.json:ro
     restart: unless-stopped
